@@ -1,8 +1,8 @@
-version: 1.0.0
+name: kyo
+version: 0.0.1
 tags: []
 layout:
   sol_sources: contracts
   build_dir: build
 dependencies: {}
 ignore: []
-name: kyo
