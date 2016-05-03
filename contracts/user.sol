@@ -1,0 +1,1 @@
+import 'kyo.sol';
