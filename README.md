@@ -34,6 +34,6 @@ Implement your own `KYOAuthority`, or use the provided examples.
 
 ```js
 contract KYOAuthority {
-    function checkOrigin() returns (bool);
+    function signerCanRun(address code, bytes4 sig) returns (bool);
 }
 ```

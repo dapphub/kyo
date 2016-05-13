@@ -5,16 +5,19 @@ contract KYOUser {
     function KYOUser( KYOAuthority kyo_auth ) {
         _kyo_auth = kyo_auth;
     }
-    modifier kyo() {
-        if( !_kyo_authority.checkOrigin() ) {
-            throw;
-        }
-        _
+    function tryKYOCheck() internal returns (bool) {
+        return _kyo_authority.checkOrigin(this, msg.sig);
+    }
+    function KYOCheck() internal {
+        if(!tryKYOCheck()) throw;
     }
     modifier try_kyo() {
-        if( !_kyo_authority.checkOrigin() ) {
-            return;
+        if( KYOCheck() )
+            _
         }
+    }
+    modifier kyo() {
+        KYOCheck();
         _
     }
 }
