@@ -7,6 +7,6 @@ contract KYOAction is DSControlledAction {
         _key = kyo_auth_key;
     }
     function() {
-        KYOAuthorityType(get(_key)).KYOCheck();
+        KYOAuthorityType(_env.get(_key)).signerCanRun(this, msg.sig);
     }
 }

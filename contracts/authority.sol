@@ -8,11 +8,13 @@ contract KYOAuthority is KYOAuthorityType, DSAuth {
     // moves back into it when they `revoke`).
     mapping(address=>uint)                                  _origin2keyring;
     mapping(uint=>bytes32)                                  _keyring2groups;
-    mapping(uint8=>mapping(address=>mapping(bytes4=>bool))) _group_can_run;
+    mapping(address=>mapping(bytes4=>bytes32))              _allowed_groups;
     mapping(address=>mapping(address=>bool)) _approved;
     function signerCanRun(address code, bytes4 sig) returns (bool) {
         var keyring = _origin2keyring[tx.origin];
-        return _keyring_can_run[keyring][code][sig];
+        var has_groups = _keyring2groups[keyring];
+        var allowed_groups = _allowed_groups[code][sig];
+        return (bytes32(0x0) != (has_groups & allowed_groups));
     }
     function setKeyring(address key, uint ring)
         auth
@@ -24,10 +26,10 @@ contract KYOAuthority is KYOAuthorityType, DSAuth {
     {
         _keyring2groups[ring] = groups;
     }
-    function setKeyringCanRun(uint8 group, address code, bytes4 sig, bool can)
+    function setAllowedGroups(address code, bytes4 sig, bytes32 groups)
         auth
     {
-        _group_can_run[group][code][sig] = can;
+        _allowed_groups[code][sig] = groups;
     }
     function link(address who)
         origin
