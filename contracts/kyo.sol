@@ -1,18 +1,18 @@
 import 'authority.sol';
 
 contract KYOUser {
-    KYOAuthority _kyo_auth;
-    function KYOUser( KYOAuthority kyo_auth ) {
+    KYOAuthorityType _kyo_auth;
+    function KYOUser( KYOAuthorityType kyo_auth ) {
         _kyo_auth = kyo_auth;
     }
     function tryKYOCheck() internal returns (bool) {
-        return _kyo_authority.checkOrigin(this, msg.sig);
+        return _kyo_auth.signerCanRun(this, msg.sig);
     }
     function KYOCheck() internal {
         if(!tryKYOCheck()) throw;
     }
     modifier try_kyo() {
-        if( KYOCheck() )
+        if( tryKYOCheck() ) {
             _
         }
     }
