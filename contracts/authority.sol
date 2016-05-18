@@ -9,7 +9,8 @@ contract KYOAuthority is KYOAuthorityType, DSAuth {
     mapping(address=>uint)                                  _origin2keyring;
     mapping(uint=>bytes32)                                  _keyring2groups;
     mapping(address=>mapping(bytes4=>bytes32))              _allowed_groups;
-    mapping(address=>mapping(address=>bool)) _approved;
+    mapping(address=>mapping(address=>bool))                _approved;
+    mapping(address=>bool)                                  _revoked;
     function signerCanRun(address code, bytes4 sig) returns (bool) {
         var keyring = _origin2keyring[tx.origin];
         var has_groups = _keyring2groups[keyring];
@@ -34,6 +35,9 @@ contract KYOAuthority is KYOAuthorityType, DSAuth {
     function link(address who)
         origin
     {
+        if( _revoked[tx.origin] ) {
+            throw;
+        }
         _approved[tx.origin][who] = true;
         if( _approved[who][tx.origin] ) {
             _origin2keyring[tx.origin] = _origin2keyring[who];
@@ -43,6 +47,7 @@ contract KYOAuthority is KYOAuthorityType, DSAuth {
         origin
     {
         _origin2keyring[tx.origin] = 0;
+        _revoked[tx.origin] = true;
     }
     modifier origin() {
         if( msg.sender != tx.origin ) {
